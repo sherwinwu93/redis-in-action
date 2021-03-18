@@ -28,11 +28,20 @@ public class Chapter01 {
 
         System.out.println();
 
-        // 投票文章
-        articleVote(conn, "other_user", "article:" + articleId);
-        String votes = conn.hget("article:" + articleId, "votes");
-        System.out.println("We voted for the article, it now has votes: " + votes);
-        assert Integer.parseInt(votes) > 1;
+
+        Random rand = new Random();
+        int randInt = rand.nextInt(2);
+        if (randInt == 1) {
+            articleOppose(conn, "other_user", "article:" + articleId);
+            String opposes = conn.hget("article:" + articleId, "opposes");
+            System.out.println("We opposed for the article, it now has opposes: " + opposes);
+        } else {
+            // 投票文章
+            articleVote(conn, "other_user", "article:" + articleId);
+            String votes = conn.hget("article:" + articleId, "votes");
+            System.out.println("We voted for the article, it now has votes: " + votes);
+            assert Integer.parseInt(votes) > 1;
+        }
 
         // 获取文章列表
         System.out.println("The currently highest-scoring articles are:");
@@ -46,6 +55,17 @@ public class Chapter01 {
         articles = getGroupArticles(conn, "new-group", 1);
         printArticles(articles);
         assert articles.size() >= 1;
+    }
+
+    public void articleOppose(Jedis conn, String user, String article) {
+        String articleId = article.substring(article.indexOf(":") + 1);
+
+        String voted = "voted:" + articleId;
+        conn.sadd(voted, user);
+        conn.expire(voted, ONE_WEEK_IN_SECONDS);
+
+        conn.hincrBy(article, "opposes", 1);
+        conn.zincrby("score:", 0 - VOTE_SCORE, article);
     }
 
     public String postArticle(Jedis conn, String user, String title, String link) {
@@ -63,6 +83,7 @@ public class Chapter01 {
         articleData.put("user", user);
         articleData.put("now", String.valueOf(now));
         articleData.put("votes", "1");
+        articleData.put("oppose", "0");
         conn.hmset(article, articleData);
 
         conn.zadd("score:", now + VOTE_SCORE, article);

@@ -1,3 +1,5 @@
+package example;
+
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.Pipeline;
 import redis.clients.jedis.Transaction;
@@ -97,10 +99,13 @@ public class Chapter04 {
     public boolean listItem(
             Jedis conn, String itemId, String sellerId, double price) {
 
+        //包裹里的商品
         String inventory = "inventory:" + sellerId;
+        //商店的名称+卖家
         String item = itemId + '.' + sellerId;
         long end = System.currentTimeMillis() + 5000;
 
+        //监视5s
         while (System.currentTimeMillis() < end) {
             conn.watch(inventory);
             if (!conn.sismember(inventory, itemId)){
@@ -108,12 +113,15 @@ public class Chapter04 {
                 return false;
             }
 
+            // 开始事务
             Transaction trans = conn.multi();
             trans.zadd("market:", price, item);
             trans.srem(inventory, itemId);
+            // 执行事务
             List<Object> results = trans.exec();
             // null response indicates that the transaction was aborted due to
             // the watched key changing.
+            // 为空,说明执行事务过程中key改变了
             if (results == null){
                 continue;
             }
@@ -132,8 +140,10 @@ public class Chapter04 {
         long end = System.currentTimeMillis() + 10000;
 
         while (System.currentTimeMillis() < end){
+            //对买家和市场信息监视
             conn.watch("market:", buyer);
 
+            //检查买房是否出现变化,以及是否有足够的钱来购买商品
             double price = conn.zscore("market:", item);
             double funds = Double.parseDouble(conn.hget(buyer, "funds"));
             if (price != lprice || price > funds){
@@ -141,6 +151,7 @@ public class Chapter04 {
                 return false;
             }
 
+            //先把支付钱给卖家,再移交商品给买家
             Transaction trans = conn.multi();
             trans.hincrBy(seller, "funds", (int)price);
             trans.hincrBy(buyer, "funds", (int)-price);
@@ -149,6 +160,7 @@ public class Chapter04 {
             List<Object> results = trans.exec();
             // null response indicates that the transaction was aborted due to
             // the watched key changing.
+            // 如果个人信息或商品买卖市场出现了变化,进行重试
             if (results == null){
                 continue;
             }

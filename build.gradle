@@ -17,9 +17,11 @@ dependencies {
     compile 'redis.clients:jedis:2.1.0'
     compile 'org.javatuples:javatuples:1.2'
     compile 'com.google.code.gson:gson:2.2.2'
+    compile 'com.fasterxml.jackson.core:jackson-core:2.11.3'
+    compile 'org.projectlombok:lombok:1.18.16'
+    compile 'com.alibaba:fastjson:1.2.75'
 
     compile name: 'commons-csv-20070730'
-
 }
 
 //set the main class from the command line property 'mainClass' (e.g. gradle -PmainClass=Chapter02)

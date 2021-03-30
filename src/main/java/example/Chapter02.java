@@ -1,3 +1,5 @@
+package example;
+
 import com.google.gson.Gson;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.Tuple;

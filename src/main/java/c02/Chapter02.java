@@ -1,7 +1,5 @@
-import c02.CacheRowsThread;
-import c02.Callback;
-import c02.CleanFullSessionsThread;
-import c02.CleanSessionsThread;
+package c02;
+
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.Tuple;
 

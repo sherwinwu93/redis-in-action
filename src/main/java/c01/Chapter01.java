@@ -1,3 +1,5 @@
+package c01;
+
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.Pipeline;
 import redis.clients.jedis.ZParams;

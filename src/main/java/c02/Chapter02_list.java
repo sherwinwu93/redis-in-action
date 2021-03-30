@@ -1,13 +1,7 @@
-import c02.CacheRowsThread;
-import c02.Callback;
-import c02.CleanFullSessionsThread;
-import c02.CleanSessionsThread;
-import com.google.gson.Gson;
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.Tuple;
+package c02;
 
-import java.net.MalformedURLException;
-import java.net.URL;
+import redis.clients.jedis.Jedis;
+
 import java.util.*;
 
 public class Chapter02_list {

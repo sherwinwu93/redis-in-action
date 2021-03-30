@@ -1,0 +1,23 @@
+version: '2'
+services:
+  master:
+    ## 镜像
+    image: redis
+    container_name: redis-master
+    command: redis-server /etc/redis-master.conf
+    ports:
+    - "6379:6379"
+#    networks:
+#    - sentinel-master
+    volumes:
+    - "./redis-master.conf:/etc/redis-master.conf"
+  slave1:
+    image: redis
+    container_name: redis-slave-1
+    ports:
+    - "6380:6379"
+    command: redis-server /etc/redis-slave1.conf
+    depends_on:
+    - master
+    volumes:
+    - "./redis-slave1.conf:/etc/redis-slave1.conf"

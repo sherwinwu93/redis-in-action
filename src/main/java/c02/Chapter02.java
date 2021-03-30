@@ -18,10 +18,10 @@ public class Chapter02 {
         Jedis conn = new Jedis("localhost");
         conn.select(10);
 
-//        testLoginCookies(conn);
-//        testShoppingCartCookies(conn);
+        testLoginCookies(conn);
+        testShoppingCartCookies(conn);
         testCacheRequest(conn);
-//        testCacheRows(conn);
+        testCacheRows(conn);
     }
 
     public void testCacheRows(Jedis conn) throws InterruptedException {
@@ -247,6 +247,7 @@ public class Chapter02 {
             // 商品总浏览数
             conn.zincrby("viewed:", -1, item);
         }
+
     }
 
 }

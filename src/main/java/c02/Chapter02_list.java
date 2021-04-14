@@ -1,6 +1,7 @@
 package c02;
 
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.Pipeline;
 
 import java.util.*;
 
@@ -64,7 +65,6 @@ public class Chapter02_list {
             // 商品总浏览数
             conn.zincrby("viewed:", -1, item);
         }
-
     }
 
     private void remList(Jedis conn, String key, long limit) {

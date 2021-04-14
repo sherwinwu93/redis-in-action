@@ -50,6 +50,8 @@ goto fail
 
 if not "%OS%" == "Windows_NT" goto win9xME_args
 
+set DEFAULT_JVM_OPTS="-Dfile.encoding=UTF-8"
+
 :win9xME_args
 @rem Slurp the command line arguments.
 set CMD_LINE_ARGS=

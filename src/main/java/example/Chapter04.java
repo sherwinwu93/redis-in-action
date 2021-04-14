@@ -19,9 +19,9 @@ public class Chapter04 {
         Jedis conn = new Jedis("localhost");
         conn.select(15);
 
-        testListItem(conn, false);
+//        testListItem(conn, false);
         testPurchaseItem(conn);
-        testBenchmarkUpdateToken(conn);
+//        testBenchmarkUpdateToken(conn);
     }
 
     public void testListItem(Jedis conn, boolean nested) {
@@ -105,15 +105,22 @@ public class Chapter04 {
         String item = itemId + '.' + sellerId;
         long end = System.currentTimeMillis() + 5000;
 
-        //监视5s
+        //5s超时时间
         while (System.currentTimeMillis() < end) {
+            // 监视卖家包裹发生的变动
             conn.watch(inventory);
+            /**
+             * 验证被出售的商品仍然存在于卖家的包裹里面
+             */
             if (!conn.sismember(inventory, itemId)){
                 conn.unwatch();
                 return false;
             }
 
             // 开始事务
+            /**
+             * 将商品添加到市场里面
+             */
             Transaction trans = conn.multi();
             trans.zadd("market:", price, item);
             trans.srem(inventory, itemId);
@@ -139,11 +146,12 @@ public class Chapter04 {
         String inventory = "inventory:" + buyerId;
         long end = System.currentTimeMillis() + 10000;
 
+        // 10s超时时间
         while (System.currentTimeMillis() < end){
-            //对买家和市场信息监视
+            //监视市场以及买家个人信息发生的变化
             conn.watch("market:", buyer);
 
-            //检查买房是否出现变化,以及是否有足够的钱来购买商品
+            //检查商品价格是否出现变化,以及是否有足够的钱来购买商品
             double price = conn.zscore("market:", item);
             double funds = Double.parseDouble(conn.hget(buyer, "funds"));
             if (price != lprice || price > funds){
